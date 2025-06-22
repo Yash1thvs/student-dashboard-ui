@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axios";
 
 const Register = () => {
@@ -46,72 +46,89 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md w-96"
-      >
-        <h2 className="text-2xl font-semibold text-center mb-4">Register</h2>
+    <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <div className="card shadow p-4" style={{ width: "100%", maxWidth: "400px" }}>
+        <div className="text-center mb-3">
+          <h2 className="fw-bold text-primary">Student-Instructor Platform</h2>
+          <p className="text-muted">Create your account</p>
+        </div>
 
-        {error && <p className="text-red-500 text-center mb-3">{error}</p>}
+        {error && <div className="alert alert-danger text-center">{error}</div>}
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded mb-3"
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded mb-3"
-          required
-        />
+          <div className="mb-3">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded mb-3"
-          required
-        />
+          <div className="mb-3">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
 
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded mb-3"
-          required
-        />
+          <div className="mb-3">
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
 
-        <select
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border rounded mb-4"
-        >
-          <option value="student">Student</option>
-          <option value="instructor">Instructor</option>
-        </select>
+          <div className="mb-4">
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="form-select"
+              required
+            >
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+            </select>
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          Register
-        </button>
-      </form>
+          <button type="submit" className="btn btn-success w-100">
+            Register
+          </button>
+        </form>
+
+        <div className="text-center mt-3">
+          <span className="text-muted">Already have an account? </span>
+          <Link to="/" className="text-primary fw-semibold">
+            Login
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
