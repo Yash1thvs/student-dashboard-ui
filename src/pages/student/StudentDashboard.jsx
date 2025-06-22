@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
+import Chatbot from "../../components/Chatbot"
+
 import dayjs from "dayjs";
-import "../../index.css";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Alert,
+  Card,
+  ProgressBar,
+  Badge,
+} from "react-bootstrap";
+
+import { Navbar, Nav } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+
 
 const StudentDashboard = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -10,6 +26,14 @@ const StudentDashboard = () => {
   const [message, setMessage] = useState("");
   const [progressInputs, setProgressInputs] = useState({});
   const token = localStorage.getItem("token");
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
 
   useEffect(() => {
     fetchAllCourses();
@@ -80,110 +104,117 @@ const StudentDashboard = () => {
   };
 
   const enrolledCourseIds = new Set(enrolledCourses.map((c) => c.course_id));
-  const availableCourses = allCourses.filter((c) => !enrolledCourseIds.has(c.id));
+  const availableCourses = allCourses.filter(
+    (c) => !enrolledCourseIds.has(c.id)
+  );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto font-sans">
-      <h2 className="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
-        <span>🎓</span> My Learning Dashboard
+    <Container className="mt-4">
+      <Navbar expand="lg" className="mb-4 shadow-sm">
+        <Container>
+          <Navbar.Brand>📘 EduPlatform</Navbar.Brand>
+          <Nav className="ms-auto">
+            <Button variant="outline-danger" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Nav>
+        </Container>
+      </Navbar>
+      
+      <h2 className="text-center mb-4">
+        🎓 My Learning Dashboard
       </h2>
 
-      <div className="mb-6 flex gap-4 items-center">
-        <select
-          value={selectedCourseId}
-          onChange={(e) => setSelectedCourseId(e.target.value)}
-          className="border px-4 py-2 rounded-md w-64 text-sm shadow-sm"
-        >
-          <option value="">-- Select a course to enroll --</option>
-          {availableCourses.map((course) => (
-            <option key={course.id} value={course.id}>
-              {course.name}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={handleEnroll}
-          className="bg-purple-600 text-white px-5 py-2 rounded hover:bg-purple-700 text-sm"
-        >
-          Enroll
-        </button>
-      </div>
+      <Row className="mb-3 align-items-center">
+        <Col md={6}>
+          <Form.Select
+            value={selectedCourseId}
+            onChange={(e) => setSelectedCourseId(e.target.value)}
+          >
+            <option value="">-- Select a course to enroll --</option>
+            {availableCourses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.name}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+        <Col md="auto">
+          <Button variant="primary" onClick={handleEnroll}>
+            Enroll
+          </Button>
+        </Col>
+      </Row>
 
-      {message && (
-        <div className="mb-4 px-4 py-2 bg-green-100 text-green-800 rounded shadow">
-          {message}
-        </div>
-      )}
+      {message && <Alert variant="info">{message}</Alert>}
 
       {enrolledCourses.length === 0 ? (
-        <p className="text-gray-500 text-sm">You haven't enrolled in any courses yet.</p>
+        <p className="text-muted">You haven't enrolled in any courses yet.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Row xs={1} md={2} lg={3} className="g-4">
           {enrolledCourses.map((course) => {
-            const isDueSoon = dayjs(course.due_date).diff(dayjs(), "day") <= 7;
-
+            const isDueSoon =
+              dayjs(course.due_date).diff(dayjs(), "day") <= 7;
             return (
-              <div
-                key={course.course_id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-4"
-              >
-                <img
-                  src={course.thumbnail || "https://via.placeholder.com/400x200?text=Course+Image"}
-                  alt={course.name}
-                  className="w-full h-40 object-cover rounded-md mb-3"
-                />
-                <h3 className="text-xl font-semibold text-gray-800">{course.name}</h3>
-
-                <p className="text-sm text-gray-600 mt-1">
-                  Due: {course.due_date}
-                  {isDueSoon && (
-                    <span className="ml-2 text-red-600 font-semibold">⚠️ Soon</span>
-                  )}
-                </p>
-
-                {course.progress === 100 && (
-                  <span className="inline-block mt-2 bg-green-100 text-green-800 px-2 py-1 text-xs font-semibold rounded">
-                    🏆 Completed
-                  </span>
-                )}
-
-                <div className="mt-3">
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className={`h-full transition-all duration-700 ease-in-out rounded-full ${
-                        course.progress === 100 ? "bg-green-600" : "bg-blue-600"
-                      }`}
-                      style={{ width: `${course.progress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs mt-1 text-gray-600">{course.progress}% Completed</p>
-                </div>
-
-                <div className="flex items-center mt-3 gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    placeholder="Update %"
-                    value={progressInputs[course.course_id] || ""}
-                    onChange={(e) =>
-                      handleProgressChange(course.course_id, e.target.value)
+              <Col key={course.course_id}>
+                <Card className="h-100 d-flex flex-column shadow-sm">
+                  <Card.Img
+                    variant="top"
+                    style={{ height: "180px", objectFit: "cover" }}
+                    src={
+                      course.thumbnail ||
+                      "https://via.placeholder.com/400x200?text=Course+Image"
                     }
-                    className="border px-2 py-1 rounded text-sm w-20"
                   />
-                  <button
-                    onClick={() => handleProgressUpdate(course.course_id)}
-                    className="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700"
-                  >
-                    Update
-                  </button>
-                </div>
-              </div>
+                  <Card.Body className="d-flex flex-column">
+                    <Card.Title className="d-flex justify-content-between align-items-center">
+                      {course.name}
+                      {course.progress === 100 && (
+                        <Badge bg="success">🏆 Completed</Badge>
+                      )}
+                    </Card.Title>
+
+                    <Card.Text className="mb-1">
+                      <strong>Due:</strong> {course.due_date}{" "}
+                      {isDueSoon && <span className="text-danger ms-2">⚠️ Due Soon</span>}
+                    </Card.Text>
+
+                    <ProgressBar
+                      now={course.progress}
+                      animated
+                      striped
+                      label={`${course.progress}%`}
+                      className="my-2"
+                      variant={course.progress === 100 ? "success" : "primary"}
+                    />
+
+                    <div className="mt-auto d-flex gap-2">
+                      <Form.Control
+                        type="number"
+                        min={0}
+                        max={100}
+                        placeholder="Update %"
+                        value={progressInputs[course.course_id] || ""}
+                        onChange={(e) =>
+                          handleProgressChange(course.course_id, e.target.value)
+                        }
+                      />
+                      <Button
+                        variant="info"
+                        onClick={() => handleProgressUpdate(course.course_id)}
+                      >
+                        Update
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
             );
           })}
-        </div>
+        </Row>
       )}
-    </div>
+      <Chatbot />
+    </Container>
   );
 };
 
