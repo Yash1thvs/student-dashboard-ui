@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../api/axios";
+import { Container, Row, Col, Card, Button, Form, Badge, ProgressBar } from "react-bootstrap";
+
+import { Navbar, Nav } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 
 const InstructorDashboard = () => {
@@ -10,6 +14,15 @@ const InstructorDashboard = () => {
     due_date: "",
   });
   const [message, setMessage] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
+
 
   useEffect(() => {
     fetchCourses();
@@ -35,121 +48,131 @@ const InstructorDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post("/instructor/courses", formData, {
+      await axios.post("/instructor/courses", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setMessage("Course created successfully!");
       setFormData({ name: "", thumbnail: "", due_date: "" });
-      fetchCourses(); // Refresh the course list
+      fetchCourses();
     } catch (error) {
       setMessage(error.response?.data?.msg || "Failed to create course.");
     }
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Instructor Dashboard</h1>
+    <Container className="mt-4">
+      <Navbar expand="lg" className="mb-4 shadow-sm">
+        <Container>
+          <Navbar.Brand>📘 EduPlatform</Navbar.Brand>
+          <Nav className="ms-auto">
+            <Button variant="outline-danger" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Nav>
+        </Container>
+      </Navbar>
 
-      {/* Course Creation Form */}
-      <form
-        onSubmit={handleCourseSubmit}
-        className="bg-white p-6 shadow-md rounded-lg mb-8"
-      >
-        <h2 className="text-xl font-semibold mb-4">Create New Course</h2>
+      <h2 className="text-center mb-4">
+        👩‍🏫 Instructor Dashboard
+      </h2>
 
-        {message && (
-          <p className="text-sm mb-4 text-blue-600 font-medium">{message}</p>
+      <Card className="mb-5">
+        <Card.Body>
+          <h5 className="mb-3">Create New Course</h5>
+          {message && <p className="text-success">{message}</p>}
+          <Form onSubmit={handleCourseSubmit}>
+            <Row className="mb-2">
+              <Col md={4}>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  placeholder="Course Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Col>
+              <Col md={4}>
+                <Form.Control
+                  type="text"
+                  name="thumbnail"
+                  placeholder="Thumbnail URL"
+                  value={formData.thumbnail}
+                  onChange={handleInputChange}
+                />
+              </Col>
+              <Col md={3}>
+                <Form.Control
+                  type="date"
+                  name="due_date"
+                  value={formData.due_date}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Col>
+              <Col md={1}>
+                <Button type="submit" variant="primary" block>
+                  Create
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Card.Body>
+      </Card>
+
+      <Row>
+        {courses.length === 0 ? (
+          <p className="text-muted text-center">No courses created yet.</p>
+        ) : (
+          courses.map((course) => (
+            <Col key={course.id} md={4} className="mb-4">
+              <Card className="h-100">
+                <Card.Img
+                  variant="top"
+                  src={course.thumbnail}
+                  alt={course.name}
+                  style={{ objectFit: "cover", height: "180px" }}
+                />
+                <Card.Body className="d-flex flex-column">
+                  <Card.Title>{course.name}</Card.Title>
+                  <Card.Text>
+                    <strong>Due:</strong> {course.due_date}
+                  </Card.Text>
+                  <Card.Text>
+                    <strong>Enrolled:</strong> {course.enrollment_count}
+                  </Card.Text>
+                  <div className="mb-2">
+                    <strong>Completion:</strong>
+                    <ProgressBar
+                      now={course.completion_percentage}
+                      label={`${course.completion_percentage}%`}
+                      striped
+                      variant="success"
+                      className="mt-1"
+                    />
+                  </div>
+                  <Card.Subtitle className="mt-3 mb-2 text-muted">
+                    Enrolled Students:
+                  </Card.Subtitle>
+                  {course.enrolled_students.length === 0 ? (
+                    <p className="text-muted">No students enrolled yet.</p>
+                  ) : (
+                    <ul className="ps-3 mb-0" style={{ fontSize: "0.9rem" }}>
+                      {course.enrolled_students.map((student) => (
+                        <li key={student.id}>
+                          {student.name} — {student.progress}%
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          ))
         )}
-
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleInputChange}
-          placeholder="Course Name"
-          className="w-full mb-3 p-2 border rounded"
-          required
-        />
-        <input
-          type="text"
-          name="thumbnail"
-          value={formData.thumbnail}
-          onChange={handleInputChange}
-          placeholder="Thumbnail URL"
-          className="w-full mb-3 p-2 border rounded"
-        />
-        <input
-          type="date"
-          name="due_date"
-          value={formData.due_date}
-          onChange={handleInputChange}
-          className="w-full mb-4 p-2 border rounded"
-          required
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Create Course
-        </button>
-      </form>
-
-      {/* Course Display */}
-      {courses.length === 0 ? (
-        <p>No courses created yet.</p>
-      ) : (
-        <div className="grid gap-6">
-          {courses.map((course) => (
-            <div key={course.id} className="bg-white p-6 shadow-md rounded-lg">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-xl font-semibold">{course.name}</h2>
-                  <p className="text-sm text-gray-600">Due: {course.due_date}</p>
-                </div>
-                {course.thumbnail && (
-                  <img
-                    src={course.thumbnail}
-                    alt={course.name}
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-                )}
-              </div>
-
-              <p className="mb-2 text-sm text-gray-700">
-                Enrolled Students: <strong>{course.enrollment_count}</strong>
-              </p>
-
-              <div className="mb-4">
-                <div className="text-sm text-gray-600 mb-1">
-                  Completion: {course.completion_percentage}%
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-                  <div
-                    className="bg-green-500 h-full transition-all"
-                    style={{ width: `${course.completion_percentage}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              <h3 className="font-medium mb-2">Enrolled Students:</h3>
-              {course.enrolled_students.length === 0 ? (
-                <p className="text-sm text-gray-500">No students enrolled.</p>
-              ) : (
-                <ul className="pl-4 text-sm list-disc text-gray-700">
-                  {course.enrolled_students.map((student) => (
-                    <li key={student.id}>
-                      {student.name} – {student.progress}%
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      </Row>
+    </Container>
   );
 };
 
