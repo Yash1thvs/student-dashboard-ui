@@ -160,11 +160,8 @@ const StudentDashboard = () => {
                 <Card className="h-100 d-flex flex-column shadow-sm">
                   <Card.Img
                     variant="top"
-                    style={{ height: "180px", objectFit: "cover" }}
-                    src={
-                      course.thumbnail ||
-                      "https://via.placeholder.com/400x200?text=Course+Image"
-                    }
+                    // style={{ height: "180px", objectFit: "cover" }}
+                    src={`/images/${course.thumbnail}`}
                   />
                   <Card.Body className="d-flex flex-column">
                     <Card.Title className="d-flex justify-content-between align-items-center">
