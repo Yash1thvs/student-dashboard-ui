@@ -37,7 +37,7 @@ This is the frontend for **EduPlatform**, a student-instructor portal with integ
 ---
 
 ## 📁 Folder Structure
-<!-- TREEVIEW START -->
+```bash
 src/
 ├── api/
 │ └── axios.js # Axios config with baseURL
@@ -54,7 +54,7 @@ src/
 ├── main.jsx # Vite entry point
 ├── App.css
 └── index.css
-<!-- TREEVIEW END -->
+```
 
 ## ⚙️ Local Setup Instructions
 ### 1. Clone the Repository
