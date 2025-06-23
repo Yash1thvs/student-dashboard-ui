@@ -97,7 +97,7 @@ const InstructorDashboard = () => {
                 <Form.Control
                   type="text"
                   name="thumbnail"
-                  placeholder="Thumbnail URL"
+                  placeholder="Thumbnail"
                   value={formData.thumbnail}
                   onChange={handleInputChange}
                 />
@@ -112,7 +112,7 @@ const InstructorDashboard = () => {
                 />
               </Col>
               <Col md={1}>
-                <Button type="submit" variant="primary" block>
+                <Button type="submit" variant="primary" block="true">
                   Create
                 </Button>
               </Col>
@@ -130,9 +130,9 @@ const InstructorDashboard = () => {
               <Card className="h-100">
                 <Card.Img
                   variant="top"
-                  src={course.thumbnail}
+                  src={`/images/${course.thumbnail}`}
                   alt={course.name}
-                  style={{ objectFit: "cover", height: "180px" }}
+                  // style={{ objectFit: "cover", height: "180px" }}
                 />
                 <Card.Body className="d-flex flex-column">
                   <Card.Title>{course.name}</Card.Title>
