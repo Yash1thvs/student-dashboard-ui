@@ -97,7 +97,7 @@ const InstructorDashboard = () => {
                 <Form.Control
                   type="text"
                   name="thumbnail"
-                  placeholder="Thumbnail"
+                  placeholder="Thumbnail Image"
                   value={formData.thumbnail}
                   onChange={handleInputChange}
                 />
