@@ -1,6 +1,6 @@
-# 🎓 EduPlatform – Frontend (Vite + React.js + Bootstrap)
+# 🎓 EduPlatform – Frontend (Vite + React.js + Bootstrap + Axios)
 
-This is the frontend for **EduPlatform**, a student-instructor portal with integrated AI assistance. Built using **Vite**, **React.js**, and **Bootstrap**, the application enables seamless interaction between students and instructors while supporting a GPT-powered AI chatbot for academic help.
+This is the frontend for **EduPlatform**, a student-instructor portal with integrated AI assistance. Built using **Vite**, **React.js**, **Bootstrap** and **Axios** the application enables seamless interaction between students and instructors while supporting a GPT-powered AI chatbot for academic help.
 
 ---
 
@@ -37,7 +37,7 @@ This is the frontend for **EduPlatform**, a student-instructor portal with integ
 ---
 
 ## 📁 Folder Structure
-
+<!-- TREEVIEW START -->
 src/
 ├── api/
 │ └── axios.js # Axios config with baseURL
@@ -54,6 +54,7 @@ src/
 ├── main.jsx # Vite entry point
 ├── App.css
 └── index.css
+<!-- TREEVIEW END -->
 
 ## ⚙️ Local Setup Instructions
 ### 1. Clone the Repository
